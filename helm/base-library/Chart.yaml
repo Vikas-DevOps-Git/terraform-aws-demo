@@ -1,0 +1,5 @@
+apiVersion: v2
+name: bny-base-library
+type: library
+version: 0.2.0
+description: BNY platform base Helm library — shared deployment, service, HPA, NetworkPolicy templates

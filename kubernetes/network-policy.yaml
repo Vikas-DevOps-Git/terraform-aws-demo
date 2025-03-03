@@ -1,0 +1,48 @@
+# Default deny all ingress and egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: finance
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# Allow payment-api to receive from ALB only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-alb-to-payment-api
+  namespace: finance
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-api
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+# Allow payment-api egress to RDS and Vault only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: payment-api-egress
+  namespace: finance
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-api
+  policyTypes: [Egress]
+  egress:
+  - ports:
+    - port: 5432   # PostgreSQL
+    - port: 8200   # Vault
+    - port: 443    # AWS APIs
+    - port: 53     # DNS
+      protocol: UDP

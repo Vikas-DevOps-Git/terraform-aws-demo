@@ -1,0 +1,4 @@
+apiVersion: v2
+name: rbac-subchart
+version: 0.1.0
+description: BNY RBAC — ServiceAccount, Role, RoleBinding per app

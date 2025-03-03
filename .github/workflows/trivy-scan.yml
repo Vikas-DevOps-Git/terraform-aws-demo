@@ -1,0 +1,37 @@
+name: Trivy Container Scan
+
+on:
+  push:
+    paths: ['helm/**', 'kubernetes/**']
+  pull_request:
+    paths: ['helm/**', 'kubernetes/**']
+
+jobs:
+  trivy-config-scan:
+    name: Trivy IaC + Config Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy on Terraform configs
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: .
+          format: table
+          exit-code: 1
+          severity: HIGH,CRITICAL
+          skip-dirs: ".git,.github"
+
+      - name: Run Trivy on Kubernetes manifests
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: kubernetes/
+          format: sarif
+          output: trivy-k8s.sarif
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy-k8s.sarif

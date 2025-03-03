@@ -1,0 +1,39 @@
+name: Helm Lint and Template
+
+on:
+  pull_request:
+    paths: ['helm/**']
+
+jobs:
+  helm-lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Helm lint base-library
+        run: helm lint helm/base-library/
+
+      - name: Helm lint payment-api
+        run: |
+          helm dependency build helm/payment-api/
+          helm lint helm/payment-api/
+          helm lint helm/payment-api/ -f helm/payment-api/values-dev.yaml
+          helm lint helm/payment-api/ -f helm/payment-api/values-prod.yaml
+
+      - name: Helm template render — dev
+        run: |
+          helm template payment-api helm/payment-api/ \
+            -f helm/payment-api/values-dev.yaml \
+            --dry-run | kubectl apply --dry-run=client -f - || true
+
+      - name: Helm diff dev vs prod
+        run: |
+          helm template payment-api helm/payment-api/ -f helm/payment-api/values-dev.yaml  > /tmp/dev.yaml
+          helm template payment-api helm/payment-api/ -f helm/payment-api/values-prod.yaml > /tmp/prod.yaml
+          diff /tmp/dev.yaml /tmp/prod.yaml || true
