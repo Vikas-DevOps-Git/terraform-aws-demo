@@ -89,3 +89,11 @@ resource "aws_iam_openid_connect_provider" "eks" {
   url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
   tags            = local.common_tags
 }
+
+# Spot interruption handler — deploy via Helm after cluster creation
+# helm install aws-node-termination-handler \
+#   eks/aws-node-termination-handler \
+#   --namespace kube-system \
+#   --set enableSpotInterruptionDraining=true \
+#   --set enableScheduledEventDraining=true
+# TODO: convert this to a Terraform helm_release resource in next sprint

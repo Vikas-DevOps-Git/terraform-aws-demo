@@ -4,7 +4,7 @@ variable "private_subnet_ids"       { type = list(string) }
 variable "cluster_role_arn"         { type = string }
 variable "node_role_arn"            { type = string }
 variable "kms_key_arn"              { type = string }
-variable "kubernetes_version"       { type = string  default = "1.29" }
+variable "kubernetes_version"       { type = string  default = "1.30" }
 variable "on_demand_instance_types" { type = list(string) default = ["m5.large"] }
 variable "spot_instance_types"      { type = list(string) default = ["m5.large", "m5.xlarge", "m4.large"] }
 variable "on_demand_desired"        { type = number  default = 2 }
