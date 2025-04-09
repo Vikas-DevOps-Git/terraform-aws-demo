@@ -129,3 +129,23 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def check_restart_counts(namespace, threshold):
+    """Flag pods with restart count above threshold in last hour."""
+    v1 = client.CoreV1Api()
+    pods = v1.list_namespaced_pod(namespace)
+    flagged = []
+    for pod in pods.items:
+        for cs in (pod.status.container_statuses or []):
+            if cs.restart_count >= threshold:
+                flagged.append({
+                    "pod":            pod.metadata.name,
+                    "container":      cs.name,
+                    "restart_count":  cs.restart_count,
+                })
+                log.warning(
+                    f"Pod {pod.metadata.name}/{cs.name} has "
+                    f"{cs.restart_count} restarts (threshold={threshold})"
+                )
+    return flagged
