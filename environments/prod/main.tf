@@ -42,3 +42,14 @@ module "alb" {
   internal     = false
   waf_acl_arn  = var.waf_acl_arn
 }
+
+# CloudWatch log group for EKS audit logs — 365 day retention for SOX
+resource "aws_cloudwatch_log_group" "eks_audit" {
+  name              = "/aws/eks/prod-eks-cluster/audit"
+  retention_in_days = var.log_retention_days
+  tags = {
+    Environment   = "prod"
+    ComplianceTag = "sox-compliant"
+    DataClass     = "confidential"
+  }
+}
