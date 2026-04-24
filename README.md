@@ -83,3 +83,6 @@ See [docs/slo-definitions.md](docs/slo-definitions.md) for full definitions and 
 - Network policies: default-deny-all with explicit allow rules
 - WAF on all ALBs — OWASP Top 10 protection
 - SOX-compliant resource tagging on every resource
+
+## Notes
+Platform validated against EKS 1.30 — April 2025.
